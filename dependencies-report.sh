@@ -41,18 +41,12 @@ if [ "$DRY_RUN" -eq 0 ]; then
   gh auth status >/dev/null 2>&1 || { echo "gh not authenticated (run: gh auth login)"; exit 1; }
 fi
 
-# --- gist lookup tables (fetched once) ---------------------------------------
+# --- gist lookup (filename -> url, for script origin) ------------------------
 : > "$TMP/gists.tsv"
-: > "$TMP/gists_summary.tsv"
 if command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then
-  # filename -> gist, used to resolve where a local script came from
   gh api /gists --paginate \
     --jq '.[] | .html_url as $url | .public as $pub | .files | keys[] | [., $url, (if $pub then "public" else "secret" end)] | @tsv' \
     > "$TMP/gists.tsv" 2>/dev/null || true
-  # one row per gist, for the human-readable list
-  gh api /gists --paginate \
-    --jq '.[] | . as $g | [(if (($g.description // "") | length) == 0 then ($g.files|keys|.[0]) else ($g.description | gsub("[\r\n|]"; " ")) end), ($g.files|length|tostring), (if $g.public then "public" else "secret" end), $g.html_url, $g.updated_at[0:10]] | @tsv' \
-    > "$TMP/gists_summary.tsv" 2>/dev/null || true
 fi
 
 gist_for() { # $1 = script basename
@@ -139,17 +133,6 @@ gist_for() { # $1 = script basename
     done < <(find "$d" -maxdepth 1 -type f -perm +111 2>/dev/null | sort)
   done
   [ "$found" -eq 1 ] || echo "| _none_ | | | |"
-  echo
-
-  echo "## My gists"
-  echo
-  if [ -s "$TMP/gists_summary.tsv" ]; then
-    echo "| Description | Files | Visibility | Updated | Link |"
-    echo "|---|---|---|---|---|"
-    awk -F'\t' '{ printf "| %s | %s | %s | %s | %s |\n", $1, $2, $3, $5, $4 }' "$TMP/gists_summary.tsv"
-  else
-    echo "_not fetched (gh not authenticated)._"
-  fi
   echo
 
   echo "## Brewfile"
