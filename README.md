@@ -3,7 +3,7 @@
 Weekly snapshot of what is installed on a Mac, published to a **secret GitHub gist** so it
 survives a dead disk.
 
-Every Monday morning it answers two questions:
+At login it answers two questions:
 
 1. **What is installed?** Homebrew taps, formulae and casks, plus a ready-to-run `Brewfile`.
 2. **Where do my own scripts come from?** Every personal shell script in the bin dirs, matched
@@ -31,14 +31,8 @@ cd dependencies-report
 ./install.sh
 ```
 
-That copies the script to `~/.local/bin/` and loads a `launchd` agent that runs it every
-**Monday at 09:00**. If the Mac is asleep or off at that time, `launchd` runs it on the next wake.
-
-Different schedule:
-
-```bash
-WEEKDAY=5 HOUR=18 ./install.sh   # 0 = Sunday, 1 = Monday … 6 = Saturday
-```
+That copies the script to `~/.local/bin/` and loads a `launchd` agent that runs it **at login**.
+If the Mac stays on, it does not re-run until the next login.
 
 > The script is **copied** out of the repo instead of being symlinked. A `launchd` agent gets no
 > TCC permission to read `~/Documents`, `~/Desktop` or `~/Downloads`, so running it straight from a
@@ -98,7 +92,7 @@ Both live at the top of `dependencies-report.sh`:
 | Path | What |
 |---|---|
 | `~/.local/bin/dependencies-report.sh` | installed script (what `launchd` actually runs) |
-| `~/Library/LaunchAgents/com.dependencies-report.plist` | the weekly schedule |
+| `~/Library/LaunchAgents/com.dependencies-report.plist` | the login schedule |
 | `~/.local/state/dependencies-report/gist_id` | id of the gist to update |
 | `~/.local/state/dependencies-report/dependencies.md` | last generated report |
 | `~/.local/state/dependencies-report/last-run.log` | stdout/stderr of the last scheduled run |

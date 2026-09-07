@@ -11,7 +11,7 @@
 #   dependencies-report.sh            generate and upload to the gist
 #   dependencies-report.sh --dry-run  generate only, print the path of the .md
 #
-# Weekly scheduling: see install.sh (launchd agent, Mondays at 09:00).
+# Scheduling: see install.sh (launchd agent, runs at login).
 #
 # State (gist id + last report + log): ~/.local/state/dependencies-report/
 
@@ -65,7 +65,7 @@ gist_for() { # $1 = script basename
   echo
   echo "Generated: $(date '+%Y-%m-%d %H:%M %Z') · macOS $(sw_vers -productVersion) · $(uname -m)"
   echo
-  echo '> Regenerated every week by `dependencies-report.sh`. Do not edit by hand, changes get overwritten.'
+  echo '> Regenerated at login by `dependencies-report.sh`. Do not edit by hand, changes get overwritten.'
   echo
 
   echo "## Quick restore"
