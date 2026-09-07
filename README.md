@@ -60,7 +60,6 @@ First run creates the secret gist and stores its id. Every run after that edits 
 | Explicitly installed formulae | `brew leaves`, with each package description |
 | All formulae / Casks | full list with versions |
 | Personal scripts | script, path, description, **origin** |
-| My gists | every gist on the account: description, file count, visibility, last update |
 | Brewfile | full `brew bundle dump`, ready to paste into a `Brewfile` |
 | Not covered | what this report deliberately ignores |
 
