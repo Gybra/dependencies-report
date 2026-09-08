@@ -38,6 +38,12 @@ trap 'rm -rf "$TMP"' EXIT
 command -v brew >/dev/null || { echo "brew not found"; exit 1; }
 if [ "$DRY_RUN" -eq 0 ]; then
   command -v gh >/dev/null || { echo "gh not found"; exit 1; }
+  # ponytail: poll GitHub up to ~60s; login Wi-Fi is usually <10s
+  for i in {1..20}; do
+    curl -sI --max-time 2 https://api.github.com >/dev/null && break
+    [ "$i" -eq 20 ] && { echo "no network after 60s"; exit 1; }
+    sleep 1
+  done
   gh auth status >/dev/null 2>&1 || { echo "gh not authenticated (run: gh auth login)"; exit 1; }
 fi
 
